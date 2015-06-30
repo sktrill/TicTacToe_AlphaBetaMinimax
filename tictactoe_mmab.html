@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>Tic Tac Toe | Minimax with Alpha-beta Pruning</title>
+	
+	<!-- Style Sheets -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<link href="custom.css" rel="stylesheet">
+	
+	
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Tic Tac Toe</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More Experiments<span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Poe Packing Problem</a></li>
+                <li><a href="#">Collab Filtering Example</a></li>
+                <li><a href="#">PGM Example</a></li>
+				<li><a href="#">R Visualization Example</a></li>
+                <!--
+				<li role="separator" class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+				-->
+              </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+	<!-- Main -->
+	<div class="container" role="main">
+		<div class = "jumbotron">
+			<h1>Tic Tac Toe</h1>
+			<p>
+				This app looks at the design of a perfect player utilizing the combinatorial game theory solution of the minimax decision rule with alpha-beta pruning.
+			</p>
+			<h4>
+				<span class="label label-primary">#game-theory</span>
+				<span class="label label-primary">#optimization</span>
+				<span class="label label-primary">#decision-rules</span>
+			</h4>
+		</div>
+	
+	<div class="row">
+		<div class="col-md-6">
+			<h4>Quick Aside</h4>
+			<div class = "aside">
+			<p>
+			I first learned of Tic Tac Toe in my grandfather's copy of Scientific American in the 'Mathematical Games' monthly column written by the now late 
+			Martin Gardner. Martin, though not a mathematician himself, worked with mathematicians, philosophers and scientists to reveal the wonderful world
+			of recreational mathematics and logic to the masses (and one young quadrupled-eyed keener). Topics like Conways Game of Life, Tower of Hanoi and Hexaflexagons
+			became part of the vernacular and experiments of many a young thinker across generations. Martin's work inspired others such as Douglas Hofstadter, 
+			Shakuntala Devi, Steven Strogratz in the New York Times and even a slew of mathy YouTubers. The explanation of these few experiments in games, math and 
+			logic serve, however insignificant, to honour Martin Gardner's contributions, influence and to carry on a task he started over five decades ago.
+			</p>
+			</div>	
+			<h2>Problem</h2>
+			<p>
+			Create a perfect player such that every Tic Tac Toe (TTT) ends in a draw or a win regardless of which player starts.
+			</p>
+			<h2>Solution</h2>
+			<p>
+			TTT is a two-person zero-sum game (a game such that each player's gain / loss utility is balanced by the other's loss / gain) with perfect information 
+			(since players play in turn neither player has an information advantage over the other), which lends itself to the <a href="https://en.wikipedia.org/wiki/Minimax#Minimax_algorithm_with_alternate_moves" target="_blank">minimax</a> decision rule strategy. 
+			</p>
+			<p>
+			The minimax decision rule for the perfect player works by aiming to minimize the maximum payoff possible for the other player. This payoff is calculated by a heuristic
+			evaluation (<code>function scoreCalc()</code>) that calculates the winning state of a board. The minimax can be thought of as exploring the nodes of a 
+			game tree, traversing the possible different configurations of the board. This makes minimax a rather tedious algorithm working in exponential time 
+			complexity (related to how the number of branches and depth of the tree) and linear space complexity. 
+			</p>
+			<p>
+			It can be optimized by the <a href="https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning" target="_blank">alpha-beta pruning</a> search algorithm that seeks
+			to seeks to decrease the number of evaluated nodes by maintaining two values <code>alpha (α)</code> and <code>beta (β)</code>, which represents the maximum payoff assured 
+			to the perfect player and the minimum payoff assured to the other, respectively. This allows us to avoid certain nodes in the game tree where <code>α</code> > <code>β</code>. 
+			</p>
+			<p>
+			The pseudocode used in the <code>function alphaBetaMM()</code> is provided below:
+			</p>
+			<div class = "pseudo">
+				<pre>
+01 <b>function</b> alphaBetaMM(depth, α, β, maxPlayer, turns)
+02    calculate all possible next moves
+03    <b>if</b> terminal node (i.e. next move ends the game) or depth = 0
+04        value = heuristic value of that node from scoreCalc(turns)
+05        <b>return</b> the heuristic value of that node
+06    <b>else</b>
+07        <b>for</b> each child of node (i.e. for each next move)
+08            <b>if</b> maxPlayer
+09                value := alphaBetaMM(depth - 1,α, β, minPlayer,turns)
+10                α = max(α, value)
+11                value = α
+12            <b>else</b>
+13                value := alphaBetaMM(depth - 1,α, β, maxPlayer,turns)
+14                β = min(β, value)
+15                value = β
+16            <b>if</b> β ≤ α
+17                <b>break</b>
+18    <b>return</b> value;
+					</pre>
+				</div>
+				<h2>Concluding Thoughts</h2>
+				<p>
+				The Tic Tac Toe alpha-beta minimax solution is not a difficult solution but will serve us well as we look to explore game solutions for more interesting games (Othello, Mancala etc). 
+				That said TTT can be made quite interesting by adding additional dimensions (or even a <a href="https://en.wikipedia.org/wiki/Quantum_tic-tac-toe" target="_blank">quantum twist</a>).
+				In his Scientific American Tic Tac Toe piece, Gardner shows how these additions can make even this age old game non-trivial:
+				</p>
+				<blockquote>
+				"A truly master player, robot or human, would not only know the most probably responses of novices, as determined by statistical studies of past games; he would also analyze each 
+				opponent's style of play to determine what sort of mistakes the opponent would most likely make. If the novice improved as he played, this too would have to be considered. At this point
+				the humble game of tic tac toe plunges us into far from trivial questions of probability and psychology."
+				<p>
+				Scientific American, March 1957
+				</p>
+				</blockquote>
+			</div>
+			<div class="col-md-6" id="gameDiv">
+				<h3 class = "gameSummary"><span id="movecount">Who starts?</span></h3>
+				<div class = "player">
+					<a onclick = "pcStart()"><span class="glyphicon glyphicon-hdd playerSelect"></span></a>
+					<a onclick = "playerStart()"><span class="glyphicon glyphicon-user playerSelect"></span></a>
+				</div>
+				<canvas id="canvas"></canvas>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Scripts -->
+	<script src="tictactoe_mmab.js"></script>	
+	<script>
+		initplay(canvas, document.getElementById('movecount'),"gameDiv");
+	</script>
+</body>
+</html>
