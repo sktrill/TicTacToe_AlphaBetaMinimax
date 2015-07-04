@@ -10,10 +10,11 @@ var gDrawingContext;
 
 var gPieces;
 var gNumPieces;
-var gGameSummary;
+var gGameSummary; 
 var gGameInProgress;
 var gTurn;
-var gPCWins;
+var gPCWins; // to track if PC (perfect player) wins
+
 
 function Cell(row, column, value, win) {
     this.row = row;
@@ -39,11 +40,13 @@ function endGame() {
 	}
 }
 
+// returns Cell with .row and .column properties
 function getCursorPosition(e) {
-    /* returns Cell with .row and .column properties */
+    
     var x;
     var y;
 	
+	// gets coordinates relative to canvas
     if(e.offsetX) {
         x = e.offsetX;
         y = e.offsetY;
@@ -72,6 +75,7 @@ function getCursorPosition(e) {
     return cell;
 }
 
+// checks all 8 possible win patterns (3 horizontal lines + 3 vertical lines + 2 diagonal lines)
 function isTheGameOver() {
 	if (((gPieces[0].value * gPieces[1].value * gPieces[2].value) == 1) || ((gPieces[0].value * gPieces[1].value * gPieces[2].value) == 8)) {
 		return true;
@@ -110,7 +114,7 @@ function possibleMoves () {
 	var j = 0;
 	
 	if (isTheGameOver()) {
-		nextMoves[j] = -999;
+		nextMoves[j] = -999; // returns dummy value if game is over, i.e. no next moves possible
 		return nextMoves;
 	}
 	for (var i = 0; i < 9; i++) {
@@ -123,6 +127,7 @@ function possibleMoves () {
 	return nextMoves;
 }
 
+// find final winning pattern
 function setWinner () {
 	findWinPattern (0,1,2);
 	findWinPattern (0,1,2);
@@ -158,7 +163,12 @@ function scoreCalc (turnsNeeded) {
 	return bestScore;
 }
 
-
+/* heuristic evaluation is based on:
+- if a 3 cell winning pattern is found add 100 to score, increase score for fewer turns needed
+- if a 2 cell winning pattern is found add 10 to the score, increase score for fewer turns needed
+- else score is zero
+positive is for maximizingPlayer, which is always the PC
+*/
 function scoreCalcByWinPattern (cell1, cell2, cell3,turnsNeeded) {
 	if (gPieces[cell1].value * gPieces[cell2].value * gPieces[cell3].value == 1) {
 		return gTurn ? (-100 - turnsNeeded * 10) : (100 - turnsNeeded * 10);
@@ -177,6 +187,7 @@ function scoreCalcByWinPattern (cell1, cell2, cell3,turnsNeeded) {
 	}
 }
 
+// recursive function to optimize decisions - see description of pseudocode
 function alphaBetaMM (depth, alpha, beta, maximizingPlayer, turnsNeeded) {
 	var nextMoves = possibleMoves();
 	var bestScore;
@@ -276,7 +287,7 @@ function playOnClick(e) {
 	}
 }
 
-function drawPiece(p, selected) {
+function drawPiece(p, selected) { 
 	var i = p.row + p.column * 3; //index for gPieces
 	gDrawingContext.lineWidth = 10;
     if (gPieces[i].value == 1) { // true = 'x'
@@ -290,7 +301,7 @@ function drawPiece(p, selected) {
 		gDrawingContext.moveTo(x + kPieceWidth - 30, y + 30);
 		gDrawingContext.lineTo(x + 30, y + kPieceHeight - 30);
 		gDrawingContext.closePath();
-		if (selected) {
+		if (selected) { // 'selected' changes colour for pieces in winning pattern
 			gDrawingContext.strokeStyle = "#fd482f";
 		}
 		else {
@@ -307,7 +318,7 @@ function drawPiece(p, selected) {
 		gDrawingContext.beginPath();
 		gDrawingContext.arc(x, y, radius, 0, Math.PI*2, false);
 		gDrawingContext.closePath();
-		if (selected) {
+		if (selected) { // 'selected' changes colour for pieces in winning pattern
 			gDrawingContext.strokeStyle = "#fd482f";
 		}
 		else {
@@ -319,7 +330,6 @@ function drawPiece(p, selected) {
 		return;
 	}
 }
-
 
 function drawBoard_ttt() {
 		gDrawingContext.clearRect(0, 0, kPixelWidth, kPixelHeight);
@@ -366,6 +376,8 @@ function newGame_ttt() {
 	       new Cell(kBoardHeight - 2, 2, 0,false),
 	       new Cell(kBoardHeight - 1, 2, 0,false)];
 	var startPos = Math.floor((Math.random() * 4) + 1);
+	
+	// set one of the corner pieces as a first move if PC starts as 'X'
 	if (!gTurn) {
 		if (startPos == 1) {
 			gPieces[0].value = 1;
@@ -380,7 +392,7 @@ function newGame_ttt() {
 			gPieces[8].value = 1;
 		}
 	}
-	console.log(gPieces);
+	
 	gPCWins = false;
 	gGameSummary.innerHTML = "Game on!";
 	gNumPieces = gPieces.length;
@@ -397,11 +409,13 @@ if (typeof resumeGame != "function") {
     }
 }
 
+// called in HTML if player icon is clicked
 function playerStart() {
 	gTurn = true; // x = player
 	newGame_ttt();
 }
 
+// called in HTML if PC icon is clicked
 function pcStart() {
 	gTurn = false; // x = PC
 	newGame_ttt();
