@@ -15,7 +15,7 @@ var gGameInProgress;
 var gTurn;
 var gPCWins; // to track if PC (perfect player) wins
 
-
+// object for each cell on the board
 function Cell(row, column, value, win) {
     this.row = row;
     this.column = column;
@@ -23,6 +23,7 @@ function Cell(row, column, value, win) {
 	this.win = win;
 }
 
+// checks if game has ended and accordingly draws winning pattern (in red) and displays message
 function endGame() {
     gGameInProgress = false;
 	setWinner();
@@ -109,6 +110,7 @@ function isTheGameOver() {
 	}
 }
 
+// returns all possible moves on the board
 function possibleMoves () {
 	var nextMoves = [];
 	var j = 0;
@@ -127,7 +129,7 @@ function possibleMoves () {
 	return nextMoves;
 }
 
-// find final winning pattern
+// finds and sets final winning pattern
 function setWinner () {
 	findWinPattern (0,1,2);
 	findWinPattern (0,1,2);
@@ -148,6 +150,7 @@ function findWinPattern (cell1, cell2, cell3) {
 	}
 }
 
+// calculates heuristic evaluation score for each possible winning pattern
 function scoreCalc (turnsNeeded) {
 	var bestScore = 0;
 	
@@ -187,7 +190,7 @@ function scoreCalcByWinPattern (cell1, cell2, cell3,turnsNeeded) {
 	}
 }
 
-// recursive function to optimize decisions - see description of pseudocode
+// alphabeta minimax recursive function to optimize decisions for the PC - see description of pseudocode
 function alphaBetaMM (depth, alpha, beta, maximizingPlayer, turnsNeeded) {
 	var nextMoves = possibleMoves();
 	var bestScore;
@@ -251,13 +254,14 @@ function alphaBetaMM (depth, alpha, beta, maximizingPlayer, turnsNeeded) {
 	return bestMove;
 }
 
-
+// calling function for the PC's next move
 function getMove() {
 	var bestMove = alphaBetaMM(4,-99999,99999,true,0);
 	var cell = new Cell(bestMove.row,bestMove.column,0,false);
 	return cell;
 }
 
+// game board interaction
 function playOnClick(e) {
     var cell = getCursorPosition(e);
 	var i = cell.row + cell.column * 3; //index for gPieces
@@ -287,6 +291,7 @@ function playOnClick(e) {
 	}
 }
 
+// draws Xs and Os
 function drawPiece(p, selected) { 
 	var i = p.row + p.column * 3; //index for gPieces
 	gDrawingContext.lineWidth = 10;
@@ -331,6 +336,7 @@ function drawPiece(p, selected) {
 	}
 }
 
+// draws Tic Tac Toe board
 function drawBoard_ttt() {
 		gDrawingContext.clearRect(0, 0, kPixelWidth, kPixelHeight);
 		gDrawingContext.beginPath();
@@ -364,7 +370,7 @@ function drawBoard_ttt() {
     saveGameState();
 }
 
-
+// initializing new game
 function newGame_ttt() {
     gPieces = [new Cell(kBoardHeight - 3, 0, 0,false),
 	       new Cell(kBoardHeight - 2, 0, 0,false),
