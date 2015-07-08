@@ -8,14 +8,16 @@ var kPixelHeight= 1 + (kBoardHeight * kPieceHeight);
 var gCanvasElement;
 var gDrawingContext;
 
-var gPieces;
+var gPieces; // array of Cell objects
 var gNumPieces;
+
+// global booleans
 var gGameSummary; 
 var gGameInProgress;
 var gTurn;
 var gPCWins; // to track if PC (perfect player) wins
 
-// object for each cell on the board
+// class for each cell on the board
 function Cell(row, column, value, win) {
     this.row = row;
     this.column = column;
