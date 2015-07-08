@@ -1,4 +1,4 @@
-# TicTacToe_AlphaBetaMinimax
+# Tic Tac Toe - Alphabeta Minimax
 
 Play with the app here: https://sk-tictactoe-alphabetamm.herokuapp.com/
 
